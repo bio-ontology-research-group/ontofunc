@@ -1,0 +1,188 @@
+MA	Mouse adult gross anatomy
+AERO	Adverse Event Reporting Ontology
+AAO	Amphibian gross anatomy
+ATO	Amphibian taxonomy
+AEO	Anatomical Entity Ontology
+ADW	Animal natural history and life history
+APO	Ascomycete phenotype ontology
+FYPO	Fission Yeast Phenotype Ontology
+PATO	Phenotypic quality
+BILA	Bilateria anatomy
+GO	Biological process PRERELEASE
+BTO	BRENDA tissue / enzyme source
+CARO	Common Anatomy Reference Ontology
+CDAO	Comparative Data Analysis Ontology
+BSPO	Spatial Ontology
+SPD	Spider Ontology
+CL	Cell type PRERELEASE
+DC_CL	Dendritic cell PRERELEASE
+CHEBI	Chemical entities of biological interest
+CHEMINF	Chemical Information Ontology
+RESID	Protein covalent bond
+DDANAT	Dictyostelium discoideum anatomy
+DOID	Human disease ontology
+ExO	Exposure ontology
+ERO	eagle-i resource ontology
+IDO	Infectious disease
+FLU	Influenza Ontology
+IDOMAL	Malaria Ontology
+EMAP	Mouse gross anatomy and development
+ENVO	Environment Ontology PRERELEASE
+IEV	Event (INOH pathway ontology)
+ECO	Evidence codes
+EV	eVOC (Expressed Sequence Annotation for Humans)
+FIX	Physico-chemical methods and properties
+FBbt	Drosophila gross anatomy PRERELEASE
+FBdv	Drosophila development
+FBsp	Fly taxonomy
+FBcv	FlyBase Controlled Vocabulary
+FMA	Foundational Model of Anatomy (subset) PRERELEASE
+FAO	Fungal gross anatomy
+YPO	Yeast phenotypes
+BOOTStrep	Gene Regulation Ontology
+	Loggerhead nesting
+HOM	homology_ontology
+vHOG	verteberate Homologous Organ Groups
+EHDAA	Human developmental anatomy, abstract version
+EHDAA2	Human developmental anatomy, abstract version, v2
+EHDA	Human developmental anatomy, timed version
+HP	human phenotype ontology
+HAO	Hymenoptera Anatomy Ontology
+IAO	Information Artifact Ontology
+FBbi	Biological imaging methods
+IPR	Protein Domains
+KISAO	Kinetic Simulation Algorithm Ontology
+LiPrO	Lipid Ontology
+MP	Mammalian phenotype
+MAO	Multiple alignment
+MFO	Medaka fish anatomy and development
+MAT	Minimal anatomical terminology
+MO	Microarray experimental conditions
+IMR	Molecule role (INOH Protein name/family name ontology)
+TGMA	Mosquito gross anatomy
+MIRO	Mosquito insecticide resistance
+MPATH	Mouse pathology
+NCBITaxon	NCBI organismal classification
+NBO	Neuro Behavior Ontology
+ncithesaurus	NCI Thesaurus
+NIF_GrossAnatomy	NIF Gross Anatomy
+NIF_Cell	NIF Cell
+NIF_Dysfunction	NIF Dysfunction
+NMR	NMR-instrument specific component of metabolomics investigations
+OBI	Ontology for biomedical investigations
+BFO	Basic Formal Ontology
+OAE	Ontology of Adverse Events
+OGMS	Ontology for General Medical Science
+OMRSE	Ontology of Medically Related Social Entities
+OPL	Ontology for Parasite LifeCycle
+PW	Pathway ontology
+EO	Plant Environmental Conditions
+TO	Plant Trait Ontology
+PLO	Plasmodium life cycle
+PD_ST	Platynereis stage ontology
+PO	Plant Ontology
+PAO	Plant Anatomy Ontology
+PGDSO	Plant Growth and Development Stage
+PORO	Porifera Ontology
+PR	PRotein Ontology (PRO) PRERELEASE
+ProPreO	Proteomics data and process provenance
+MI	Protein-protein interaction
+MOD	Protein modification
+MS	Mass spectrometry
+OBO_REL	OBO relationship types (legacy)
+RO	Relation ontology
+REX	Physico-chemical process
+RNAO	RNA ontology
+SAO	Subcellular anatomy ontology
+SEP	Sample processing and separation techniques
+SO	Sequence types and features PRERELEASE
+SWO	Software ontology
+SBO	Systems Biology
+SOPHARM	Suggested Ontology for Pharmacogenomics
+TAXRANK	Taxonomic rank vocabulary
+TAO	Teleost Anatomy Ontology
+TTO	Teleost taxonomy
+TRANS	Pathogen transmission
+SYMP	Symptom Ontology
+GRO	Cereal plant development
+TAHH	Terminology of Anatomy of Human Histology
+TAHE	Terminology of Anatomy of Human Embryology
+TADS	Tick gross anatomy
+UBERON	Uber anatomy ontology
+UO	Units of measurement
+VO	Vaccine ontology
+VAO	Vertebrate Musculoskeletal Anatomy Ontology
+WBbt	C. elegans gross anatomy
+WBls	C. elegans development
+WBPhenotype	C. elegans phenotype
+XAO	Xenopus anatomy and development
+ZEA	Maize gross anatomy
+ZFA	Zebrafish anatomy and development PRERELEASE
+CMO	Clinical measurement ontology
+MMO	Measurement method ontology
+XCO	Experimental condition ontology
+biological_process_xp_cellular_component	GO logical_definitions for BP in terms of CC
+biological_process_xp_self	GO logical_definitions for BP in terms of BP
+molecular_function_xp_regulators	GO logical_definitions for MF regulation terms
+cellular_component_xp_self	GO cellular component internal logical definitions
+cellular_component_xp_cell	GO cellular component to Cell ontology logical definitions
+cellular_component_xp_go	GO cellular component logical definitions using BP and MF
+biological_process_xp_multi_organism_process	GO logical definitions for multi-species regulation
+GO_XP_INTERNAL	GO internal logical definitions
+GO_XP_ALL	GO all logical definitions
+biological_process_xp_cell	GO biological_process x cell logical definitions
+biological_process_xp_uber_anatomy	GO biological_process x uberon definitions
+molecular_function_xp_uber_anatomy	GO molecular_function x uberon definitions
+biological_process_xp_plant_anatomy	GO biological_process x planton definitions
+biological_process_xp_chebi	GO biological_process x CHEBI definitions
+molecular_function_xp_chebi	GO molecular_function x CHEBI definitions
+go_to_chebi	GO x chemical entity logical definitions
+ro_proposed	Proposed new relations for RO
+ro_ucdhsc	UCDHSC Relations
+ENVO_XP	environmental entity logical definitions
+TO_XP	plant_trait logical definitions
+MP_XP	mammalian_phenotype logical definitions
+HP_XP	human_phenotype logical definitions
+HP_XP_FMA	human_phenotype x anatomy logical definitions 
+HP_XP_REL	relations for human_phenotype_xp
+HP_XP_ALL	HP all logical definitions, merged
+WP_XP	worm_phenotype logical definitions
+WP_XP_REL	relations for worm_phenotype_xp
+WP_XP_WBbt	worm_phenotype x anatomy logical definitions 
+WP_XP_WBbt_WBls	worm_phenotype x anatomy/stages logical definitions 
+WP_XP_GO	worm_phenotype x GO logical definitions
+WP_XP_CHEBI	worm_phenotype x CHEBI logical definitions
+WP_XP_GO_CHEBI	worm_phenotype x GO+CHEBI logical definitions
+SO_XP	Sequence Ontology logical definitions
+FBbt_XP	Fly Anatomy Ontology, pre-reasoned version
+uberon_anatomy_ontologies_bridge	is_a links to uberon terms
+OBO_REL_BFO_BRIDGE	RO BFO domain and range constraints
+PATO_BFO_BRIDGE	PATO BFO constraints
+caro_to_bfo	CARO to BFO is_a mappings
+CL-EMAPA	CL to EMAPA mappings
+COG2GO	cog2go mapping
+EC2GO	ec2go mapping
+EGAD2GO	egad2go mapping
+GENPROTECGO	genprotec2go mapping
+HAMAP2GO	hamap2go mapping
+INTERPRO2GO	interpro2go mapping
+METACYC2GO	metacyc2go mapping
+MIPS2GO	mips2go mapping
+MULTIFUN2GO	multifun2go mapping
+PFAM2GO	pfam2go mapping
+PRINTS2GO	prints2go mapping
+PRODOM2GO	prodom2go mapping
+PROSITE2GO	prosite2go mapping
+REACTOM2GO	reactome2go mapping
+RFAMGO	rfam2go mapping
+SMART2GO	smart2go mapping
+SPKW2GO	spkw2go mapping
+TIGR2GO	tigr2go mapping
+TIGRFAMS2GO	tigrfams2go mapping
+UMBBDENZYMEID2GO	um-bbd_enzymeid2go mapping
+UMBBDPATHWAYID2GO	um-bbd_pathwayid2go mapping
+vHOG_ASSOC	vHOG_associations
+ma2ncit	Adult Mouse Anatomy to NCI thesauris
+GO_XRF_ABBS	GO database cross-references metadata
+oboInOwl	OBO metamodel
+GAZ	

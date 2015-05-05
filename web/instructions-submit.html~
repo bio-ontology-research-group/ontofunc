@@ -1,0 +1,70 @@
+<html>
+<head>
+<style type="text/css" media="all">
+  @import "css.css" ;
+</style>
+</head>
+<body>
+
+<h2>Instructions</h2>
+<p>This is a short descriptions of the fields, most directly copied from
+  the <a href="http://func.eva.mpg.de">FUNC website</a>. Please check the 
+<a href="http://func.eva.mpg.de/doc.html">FUNC documentation</a> if
+you want to know more about the FUNC tool.</p>
+
+<table width="520px">
+  <tr valign=top>
+    <th>Project Name:</th>
+    <td>This is an arbitrary string to describe your project. 
+      You might want to enter a meaningful name to distinguish
+      between several submissions.</td>
+    </tr>
+  <tr valign=top>
+    <th>e-mail address:</th>
+    <td>An email will be sent to you after you submitted the form. 
+      The email contains the link to check the status of your analysis
+      and fetch the results.
+      </td>
+    </tr>
+  <tr valign=top>
+    <th>Input File:</th>
+    <td>Upload your tab-separated input file here. 
+      You can find a detailed description on the format 
+      <a href="http://func.eva.mpg.de/doc/inputfile.html">here</td>.
+    </tr>
+  <tr valign=top>
+    <th>Test:</th>
+    <td>Choose which test should be used to analyse your data. See
+    section methods
+      <a href="http://func.eva.mpg.de/doc/func.html#DESCRIPTION">here</a>
+      for a full description how the p-values
+      are calculated.
+    </tr>
+  <tr valign=top>
+    <th>Ontology:</th>
+    <td>The Ontology over which to perform the analysis.
+      We download the latest ontology versions in regular intervals (3
+      months) and do not currently keep older ontology versions.</td>
+    </tr>
+  <tr valign=top>
+    <th>Cutoff for number of genes/group:</th>
+    <td>Only categories with at least <em>cutoff</em> annotations will
+    be included in the analysis.</td>
+    </tr>
+  <tr valign=top>
+    <th>Number of random sets:</th>
+    <td>How many random sets should be created to asses the corrected
+      p-values and the overall significance?</td>
+    </tr>
+  <tr valign=top>
+    <th>Root nodes:</th>
+    <td>Input the identifier of the ontology class that will serve as
+    root node in the analysis. <tt>owl:Thing</tt> is the root node of
+    any ontology class. This option is useful when classes from
+    multiple ontologies are included in an ontology and you would
+    like to perform the analysis only over one particular type of class.</td>
+    </tr>
+  
+</table>
+</body>
+</html>

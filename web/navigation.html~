@@ -1,0 +1,21 @@
+<html>
+<head>
+<style type="text/css" media="all">
+  @import "css.css" ;
+</style>
+</head>
+<body>
+<span style="padding:2px;border:1px inset
+	     lightgreen;background-color:lightgreen;color:white;letter-spacing:3px;"
+	     >OntoFUNC</span> ::
+<a href="main.php" id="nav" target="CONT">Home</a> | 
+<a href="submit.php" id="nav" target="CONT">Submit a new
+  job</a> |
+<a href="checkstatus.php" id="nav" target="CONT">Status of a job</a> |
+<a href="examples.html" id="nav" target="CONT">Example data</a> |
+<a href="datahandling.html" id="nav" target="CONT">Data handling</a> |
+<a href="../ontosim/" id="nav" target="_top">OntoSIM</a> |
+<a href="http://ontofunc.googlecode.com" id="nav" target="_top">Google Code</a> |
+<a href="contact.html" id="nav" target="CONT">Contact</a>
+</body>
+</html>

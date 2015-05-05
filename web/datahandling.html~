@@ -1,0 +1,18 @@
+<html>
+<head>
+<style type="text/css" media="all">
+  @import "css.css" ;
+</style>
+</head>
+<body>
+
+<h2>Data handling policy</h2>
+
+<p>All input data is deleted once a job is completed (either
+  successfully or unsuccessfully as a result of an error). The
+  results are kept for at least one year. If you would like us to
+  delete your analysis results for any reason, please send an email
+  to <a href="mailto:rh497@cam.ac.uk">Robert</a> and state your job id.
+</p>
+</body>
+</html>
