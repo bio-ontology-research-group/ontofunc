@@ -6,11 +6,19 @@
   Input: OWL file
 
   Output directory will contain three files used by FUNC
- */
+*/
 
-				       //import org.mindswap.pellet.KnowledgeBase
-				       //import org.mindswap.pellet.expressivity.*
-				       //import org.mindswap.pellet.*
+ @Grapes([
+	  @Grab(group='org.semanticweb.elk', module='elk-owlapi', version='0.4.1'),
+	  @Grab(group='net.sourceforge.owlapi', module='owlapi-api', version='3.5.6'),
+	  @Grab(group='net.sourceforge.owlapi', module='owlapi-apibinding', version='3.5.6'),
+	  @Grab(group='net.sourceforge.owlapi', module='owlapi-impl', version='3.5.6'),
+	  @Grab(group='net.sourceforge.owlapi', module='owlapi-parsers', version='3.5.6'),
+	  @Grab(group='org.apache.jena', module='apache-jena-libs', version='3.1.0', type='pom')
+	])
+//import org.mindswap.pellet.KnowledgeBase
+//import org.mindswap.pellet.expressivity.*
+//import org.mindswap.pellet.*
 import java.util.logging.Logger
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary
