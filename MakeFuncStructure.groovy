@@ -8,17 +8,13 @@
   Output directory will contain three files used by FUNC
 */
 
- @Grapes([
-	  @Grab(group='org.semanticweb.elk', module='elk-owlapi', version='0.4.1'),
-	  @Grab(group='net.sourceforge.owlapi', module='owlapi-api', version='3.5.6'),
-	  @Grab(group='net.sourceforge.owlapi', module='owlapi-apibinding', version='3.5.6'),
-	  @Grab(group='net.sourceforge.owlapi', module='owlapi-impl', version='3.5.6'),
-	  @Grab(group='net.sourceforge.owlapi', module='owlapi-parsers', version='3.5.6'),
-	  @Grab(group='org.apache.jena', module='apache-jena-libs', version='3.1.0', type='pom')
-	])
-//import org.mindswap.pellet.KnowledgeBase
-//import org.mindswap.pellet.expressivity.*
-//import org.mindswap.pellet.*
+@Grab(group='org.slf4j', module='slf4j-api', version='1.7.25')
+@Grab(group='org.semanticweb.elk', module='elk-owlapi', version='0.4.2')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-api', version='4.5.1')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-apibinding', version='4.5.1')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-impl', version='4.5.1')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-parsers', version='4.5.1')
+
 import java.util.logging.Logger
 import org.semanticweb.owlapi.apibinding.OWLManager
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary
@@ -28,6 +24,8 @@ import org.semanticweb.owlapi.profiles.*
 import org.semanticweb.owlapi.util.*
 import org.semanticweb.owlapi.io.*
 import org.semanticweb.elk.owlapi.*
+import org.semanticweb.owlapi.model.parameters.Imports
+import org.semanticweb.owlapi.search.*
 
 
 String formatClassNames(String s) {
@@ -56,7 +54,6 @@ usage: 'Self'
 
 def opt = cli.parse(args)
 if( !opt ) {
-  //  cli.usage()
   return
 }
 if( opt.h ) {
@@ -99,13 +96,14 @@ graphpathout.println("\t\t\t\t\t")
 */
 
 termout.println(formatClassNames(fac.getOWLThing().toString())+"\towl:Thing\towl:Thing\t"+formatClassNames(fac.getOWLThing().toString())+"\tend")
-ont.getClassesInSignature().each { cl ->
+ont.getClassesInSignature(Imports.INCLUDED).each { cl ->
   def flag = false // found English label? otherwise take any other...
   def clname = "root"
   OWLAnnotationProperty label = fac.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI())
-  cl.getAnnotations(ont, label).each { anno ->
+  EntitySearcher.getAnnotationObjects(cl, ont, label).each { anno ->
+    //  cl.getAnnotations(ont, label).each { anno ->
     if (anno.getValue() instanceof OWLLiteral) {
-      OWLLiteral val = (OWLLiteral) anno.getValue();
+      OWLLiteral val = (OWLLiteral) anno.getValue()
       if (val.hasLang("en")) {
 	clname = val.getLiteral()
 	flag = true
