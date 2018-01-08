@@ -1,0 +1,33 @@
+#
+
+CXX=@CXX@
+CXXFLAGS=@CXXFLAGS@ 
+LIBS=@LIBS@
+LDFLAGS=@LDFLAGS@
+
+install=@INSTALL@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+libdir = @libdir@
+
+TARGET = func_2x2contingency_randset
+OBJS = gene.o genes.o go_graph.o go_obj.o ../../common/idmap.o ../../common/transitions.o main.o
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS) $(LIBS)
+
+%.o: %.cc
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+clean:
+	rm -f *.o $(TARGET)
+
+dist-clean: clean
+	rm -f Makefile
+
+install:
+	$(install) $(TARGET) $(bindir)

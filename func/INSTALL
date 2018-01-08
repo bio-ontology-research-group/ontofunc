@@ -1,0 +1,69 @@
+
+                        INSTALLING FUNC
+
+This file describes how to install FUNC under GNU/Linux (or UNIX). 
+
+
+
+1. REQUIREMENTS
+
+In order to compile and install FUNC you will need the standalone 
+R-Math Library. If you are lucky and have a Debian GNU/Linux, you
+can type
+
+        apt-get install r-mathlib 
+
+to install the library. Otherwise you may have to compile it yourself. 
+Get the source from http://www.r-project.org/. After you unpacked the
+R-Source look at the README in src/nmath/standalone for instructions on
+how to compile the standalone library.
+
+Otherwise, you will only need some common programs (like bash, sed,
+grep, make, perl) and of course an C++ compiler.
+
+
+
+2. EASY INSTALLATION
+
+Change to the src directory with 
+
+        cd src/
+
+and run
+
+        ./configure
+        make
+        make install
+
+If nothing goes wrong, all programs will be installed to
+/usr/local/bin. Check the documentation in /usr/local/doc or 
+run 
+
+        man func
+
+for basic instructions about the programs.
+
+
+
+3. INSTALLATION
+
+If you installed the R standalone mathlib to some unusual place 
+you probably want to set LDFLAGS to compile FUNC
+
+        LDFLAGS=-L/home/pruefer/lib ./configure
+
+You may want to add a --prefix=/path/ to install FUNC to another
+directory. Run ./configure --help for more options. Don't forget
+to include the path to the R standalone lib to your LD_LIBRARY_PATH.
+
+Then proceed with
+
+        make
+        make install
+
+Read the documentation and have fun. 
+
+                                                        KP 2005
+
+
+

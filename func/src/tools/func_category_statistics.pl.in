@@ -1,0 +1,66 @@
+#!@PERLPATH@
+
+
+while( <STDIN> ) {
+	last if ( /global-test-statistics/ ) ;
+}
+$sign = <STDIN> ;
+chomp $sign ;
+@s = split /\t/, $sign ;
+print "global-test-statistics:\n" ;
+print "$ARGV[0]\t$ARGV[1]\n" ;
+print "$s[0]\t$s[1]\n\n" ;
+
+
+while( <STDIN> ) {
+	last if ( /FDR/ ) ;
+}
+$head = <STDIN> ;
+chomp $head ;
+$vals = <STDIN> ;
+chomp $vals ;
+# simple FDR as V/R with V = E(R) randomsets, R = rejected dataset
+# -> obsoleted by FDR q-values
+# @h = split /\t/, $head ;
+# @v = split /\t/, $vals ;
+# print "p-value cutoffs for different fixed false discovery rates:\n" ;
+# print "$ARGV[0]\t\t$ARGV[1]\n" ;
+# print "SL\tfdr\tSL\tfdr\n" ;
+# print "$h[0]", "\t", $v[0], "\t", $h[5], "\t", $v[5], "\n" ;
+# print "$h[1]", "\t", $v[1], "\t", $h[6], "\t", $v[6], "\n" ;
+# print "$h[2]", "\t", $v[2], "\t", $h[7], "\t", $v[7], "\n" ;
+# print "$h[3]", "\t", $v[3], "\t", $h[8], "\t", $v[8], "\n" ;
+# print "$h[4]", "\t", $v[4], "\t", $h[9], "\t", $v[9], "\n" ;
+# print "\n" ;
+
+while( <STDIN> ) {
+	last if ( /Randomsets:/ ) ;
+}
+
+$dummy = <STDIN> ;
+$dummy = <STDIN> ;
+$dummy = <STDIN> ;
+@siggroupsdata = split /\t/, $dummy ;
+$dummy = <STDIN> ;
+$dummy = <STDIN> ;
+@siggroupsrand = split /\t/, $dummy ;
+$dummy = <STDIN> ;
+$dummy = <STDIN> ;
+@pval = split /\t/, $dummy ;
+print "significant groups at different significance level\n" ;
+print "$ARGV[0]\t\t\t\t$ARGV[1]\n" ;
+print "SL\tnr. in data set\trandom mean\tP-value\tnr. in data set\trandom mean\tP-value\n" ;
+print "0.1\t", $siggroupsdata[0], "\t", $siggroupsrand[0], "\t", $pval[0], "\t", 
+		$siggroupsdata[5], "\t", $siggroupsrand[5], "\t", $pval[5], "\n" ;
+print "0.05\t", $siggroupsdata[1], "\t", $siggroupsrand[1], "\t", $pval[1], "\t", 
+		$siggroupsdata[6], "\t", $siggroupsrand[6], "\t", $pval[6], "\n" ;
+print "0.01\t", $siggroupsdata[2], "\t", $siggroupsrand[2], "\t", $pval[2], "\t", 
+		$siggroupsdata[7], "\t", $siggroupsrand[7], "\t", $pval[7], "\n" ;
+print "0.001\t", $siggroupsdata[3], "\t", $siggroupsrand[3], "\t", $pval[3], "\t", 
+		$siggroupsdata[8], "\t", $siggroupsrand[8], "\t", $pval[8], "\n" ;
+print "0.0001\t", $siggroupsdata[4], "\t", $siggroupsrand[4], "\t", $pval[4], "\t", 
+		$siggroupsdata[9], "\t", $siggroupsrand[9], "\t", $pval[9], "\n" ;
+
+
+
+

@@ -1,0 +1,190 @@
+#!@PERLPATH@
+
+###########################################
+# reads annotation and data in ensembl/tsv format
+# prints 3 separate files with annotation
+#    and 1 file with data
+# WARNING: this script assumes that the 
+#          infile is sorted by gene names (1.column)
+
+use strict ;
+use Data::Dumper ;
+
+if ( @ARGV != 6 ) {
+	print "Usage: path_to_go_termtables infile outdir GOS statistics data\n" ;
+	exit ;
+}
+
+my ( $GO_PATH, $INFILE_NAME, $OUTD, $GOS, $STATS, $DATA ) = @ARGV ;
+
+open IN, "<$INFILE_NAME" or die "Cannot open $INFILE_NAME" ;
+
+open GO_TERM, "<$GO_PATH/term.txt" or die "Cannot open $GO_PATH/term.txt" ;
+
+open GO_GP, "<$GO_PATH/graph_path.txt" or die "Cannot open $GO_PATH/graph_path.txt" ;
+
+open STATS, ">$STATS" or die "Cannot open $STATS for writing." ;
+
+open DATA, ">$DATA" or die "Cannot open $DATA for writing." ;
+
+# read term.txt - get ids for all root GO's, hash id -> GO_id 
+
+my %id_term = () ; # id for every go_id
+my @go_rootnodes_ids ; # id for root-gos from parameter
+my @go_rootnodes = split /,/, $GOS ;
+my @rootnode_names ;
+
+while ( <GO_TERM> ) 
+{
+	chomp ; 
+	my @r = split /\t/ ;
+	for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+		if ( $r[3] eq $go_rootnodes[$i] ) {
+			$go_rootnodes_ids[$i]=$r[0] ;
+			$rootnode_names[$i]=$r[1] ;
+		}
+	}
+
+	$id_term{$r[0]} = $r[3] ;
+}
+
+close GO_TERM ;
+
+# read graph_path.txt, hash all ids that are below the requested rootnodes
+
+my @gos_for_rootnodes ;
+foreach( @go_rootnodes ) { $gos_for_rootnodes[++$#gos_for_rootnodes] = {} ; } 
+
+while ( <GO_GP> ) {
+	chomp ;
+	my @r = split /\t/ ;
+	for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+		if ( $r[1] eq $go_rootnodes_ids[$i] ) {
+			$gos_for_rootnodes[$i]->{$id_term{$r[2]}} = 1 ;
+		}
+	}
+}
+
+close GO_GP ;
+
+# check input file and save 1 file per rootnode in "Id[tab]GOs" Format
+my @filedesc ;
+foreach ( @go_rootnodes ) { open $filedesc[++$#filedesc], ">$OUTD/$_" ; }
+
+my %not_mapped ; # genes that have no annotation to any of the 3 taxonomies
+my %unknown_go ;
+my $genes_mapped = 0 ;
+my @genes_mapped_root ;
+foreach ( @go_rootnodes ) { $genes_mapped_root[++$#genes_mapped_root] = 0 ; }
+
+my @gos_per_rootnode ; # gos for this gene blow root-node
+foreach ( @go_rootnodes ) { $gos_per_rootnode[++$#gos_per_rootnode] = [] ; }
+
+my $gene_name = "" ;
+my $data ;
+while ( <IN> ) {
+	chomp ; 
+	my @r = split /\t/ ; # ensembl tab separated values format
+	# format: 
+	#        gene_id go(exactly 1) data
+	# several lines if gene is annotated in more than 1 group...
+
+	# first entry
+	if ( $gene_name eq "" ) {
+		$gene_name = $r[0] ;
+	}
+
+	# add groups to arrays, save data
+	if ( $gene_name eq $r[0] ) {
+		my $found = 0 ;
+		for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+			if ( defined $gos_for_rootnodes[$i]->{$r[1]} && $gos_for_rootnodes[$i]->{$r[1]} == 1 ) {
+				push( @{$gos_per_rootnode[$i]}, $r[1] ) ;
+				$found = 1 ;
+			}
+		}
+		if ( $found == 0 ) {
+			$unknown_go{$r[1]} = 1 ;
+		}
+		splice @r, 0, 2 ;
+		$data = join "\t", @r ;
+	# new gene: print old data to files, save new data
+	} else { 
+		unless ( $data =~ /^$/ ) {
+			my $sum_mapped = 0 ;
+			for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+				if ( @{$gos_per_rootnode[$i]} > 0 ) {
+					print {$filedesc[$i]} $gene_name, "\t" ;
+					print {$filedesc[$i]} join " ", @{$gos_per_rootnode[$i]}, "\n" ;
+					$genes_mapped_root[$i]++ ;
+				} 
+				$sum_mapped += @{$gos_per_rootnode[$i]} ;
+			}
+		
+			if ( $sum_mapped == 0 ) {
+				$not_mapped{$gene_name} = 1 ;
+			} else {
+				$genes_mapped++ ;
+				print DATA $gene_name, "\t", $data, "\n" ;
+			}
+		} 
+		
+		for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+			$gos_per_rootnode[$i] = [] ; 
+		}
+		$gene_name= $r[0] ;
+		my $found = 0 ;
+		for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+			if ( defined $gos_for_rootnodes[$i]->{$r[1]} && $gos_for_rootnodes[$i]->{$r[1]} == 1 ) {
+				push( @{$gos_per_rootnode[$i]}, $r[1] ) ;
+				$found = 1 ;
+			}
+		}
+		if ( $found == 0 ) {
+			$unknown_go{$r[1]} = 1 ;
+		}
+		splice @r, 0, 2 ;
+		$data = join "\t", @r ;
+	} 
+
+}
+
+# last gene
+unless( $data =~ /^$/ ) {
+	my $sum_mapped = 0 ;
+	for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+		if ( @{$gos_per_rootnode[$i]} > 0 ) {
+			print {$filedesc[$i]} $gene_name, "\t" ;
+			print {$filedesc[$i]} join " ", @{$gos_per_rootnode[$i]}, "\n" ;
+			$genes_mapped_root[$i]++ ;
+		} 
+		$sum_mapped += @{$gos_per_rootnode[$i]} ;
+	}
+
+	if ( $sum_mapped == 0 ) {
+		$not_mapped{$gene_name} = 1 ;
+	} else {
+		$genes_mapped++ ;
+		print DATA $gene_name, "\t", $data, "\n" ;
+	}
+}
+
+
+print STATS "Genes annotated in GO:\t$genes_mapped\n" ;
+for ( my $i = 0 ; $i < @go_rootnodes ; $i++ ) {
+	print STATS "Genes ann. in $rootnode_names[$i]:\t$genes_mapped_root[$i]\n" ;
+	close $filedesc[$i] ;
+}
+
+if ( keys %not_mapped ) {
+	print STATS "Skipped the following genes because they are\nannotated in unknown GO groups:\n" ;
+	print STATS join "\n", keys %not_mapped, "\n" ;
+}
+
+if ( keys %unknown_go ) {
+	print STATS "The following GO groups couldnt be found in your\nGO_termdb_tables distribution:\n" ;
+	print STATS join "\n", keys %unknown_go, "\n" ;
+}
+
+
+close STATS or die "Cannot close statistics-file" ;

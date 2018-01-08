@@ -1,0 +1,249 @@
+.TH FUNC 1 2006-09-02 "FUNC --RELEASE--"
+.SH NAME
+func \- functional analysis of gene data using Gene Ontology
+.SH SYNOPSIS
+.B func_hyper 
+.B -i 
+.I inputfile.tsv
+.B -t 
+.I termdb-tables_directory
+.B -o 
+.I output-directory 
+[OPTIONS]
+.br
+.B func_wilcoxon
+.B -i 
+.I inputfile.tsv
+.B -t 
+.I termdb-tables_directory
+.B -o 
+.I output-directory 
+[OPTIONS]
+.br
+.B func_2x2contingency
+.B -i 
+.I inputfile.tsv
+.B -t 
+.I termdb-tables_directory
+.B -o 
+.I output-directory 
+[OPTIONS]
+.br
+.B func_binom
+.B -i 
+.I inputfile.tsv
+.B -t 
+.I termdb-tables_directory
+.B -o 
+.I output-directory 
+[OPTIONS]
+.br
+.SH DESCRIPTION
+.B func 
+is a collection of four programs to analyze the over-
+and under-representation of data associated with genes or 
+gene products. The test runs seperately for all three
+taxonomies of Gene Ontology (or the supplied root-nodes).
+
+.B func_hyper
+uses a hypergeometric test. Each gene has the 
+binary information whether it is part of the
+group of interesting genes or not (for example: differently expressed or not).
+Each group
+is tested for how strong it differs from the
+average ratio.
+
+.B func_wilcoxon
+ranks all genes using the supplied floating point
+numbers for each gene. The sum of the ranks in 
+one group is used to calculate the probability 
+that the genes of the group have been choosen from
+the same distribution as the genes not in the group. 
+An examples for this test can include 
+intensity values from gene expression data or 
+the aminoacid divergence between two species.
+
+.B func_binom
+compares whether a group differs in the
+ratio of 2 features. Each gene has two integers
+indicating how much of each feature it has. The
+probability for each group will be calculated using the
+average rate. This test was used to analyze whether 
+aminoacid-changes accumulated in functional related 
+genes on the human or chimpanzee lineage.
+
+.B func_2x2contingency
+tests whether 4 values in an 2x2 table deviate from the 
+expectation given by the tables margin sums.
+It can be used to test for positively selected
+groups of genes (McDonald-Kreitman test). The amount of 
+synonymous and nonsynonymous changes beetween two species
+and the synonymous and nonsynonymous SNPs within
+one of the two species is needed for each gene 
+as four integer values. 
+
+The output of the programs include a list of all groups 
+with p-values for over- and under-representation as well as 
+some general statistics about the significance of the result 
+(the global test statistics). 
+See section 
+.B FILES
+for a full description of the output files. Mandatory arguments
+as well as options are the same for all programs.
+
+.SH MANDATORY ARGUMENTS
+.TP
+.BI -i " inputfile.tsv"
+The inputfile is in a tab separated values format. The first column 
+is an arbitrary string for the name of the gene or gene product and 
+the second column shows one Gene Ontology Identifier. The last column(s)
+differ for each of the four tests. 
+
+.B func_hyper 
+accepts only 1 or 0 in the third column denoting whether the gene is of interest or not.
+Example:
+
+RefSeqID	GeneOntologyId	expessed?
+.br
+NM_000014	GO:0008320	0
+.br
+NM_000014	GO:0017114	0
+.br
+NM_000015	GO:0004060	1
+.br
+NM_000017	GO:0004085	0
+.br
+
+.B func_wilcox
+accepts one floating point value per gene:
+
+RefSeqID	GeneOntologyId	value
+.br
+NM_000014	GO:0008320	6.626
+.br
+NM_000014	GO:0017114	6.626
+.br
+NM_000015	GO:0004060	2.71828
+.br
+NM_000017	GO:0004085	3.1415
+.br
+
+.B func_binom
+needs two integer values:
+
+RefSeqID	GeneOntologyId	human	chimp
+.br
+NM_000014	GO:0008320	1	1
+.br
+NM_000014	GO:0017114	1	1
+.br
+NM_000015	GO:0004060	2	3
+.br
+NM_000017	GO:0004085	4	1
+.br
+
+.B func_2x2contingency
+needs four values per gene. The order of the values
+are divergence_synonymous divergence_nonsynonymous diversity_syn
+diversity_nonsyn. Example:
+
+Gene	GeneOntologyId	ks	ka	snp_ks	snp_ka
+.br
+Adh	GO:0016491	17	7	42	2
+.br
+Adh	GO:0008270	17	7	42	2
+.br
+
+More then one line with identical data and gene name but different GO-Ids
+is expected
+if a gene is annotated to more than one GO group.
+The data and the GO-Id
+columns can be omitted, but the information will not be taken into account.
+
+.TP
+.BI -t " termdb-tables_directory"
+The Gene Ontology DAG will be constructed using three files of the go_termdb_tables 
+distribution. You can download the distribution from 
+.BR http://archive.geneontology.org/full/ . 
+Extract it and use the directory as this argument to
+the func programs.
+
+.TP
+.BI -o " output_directory"
+An empty directory will be used during the analysis to save 
+temporary files and the resultfiles. Please make shure the
+directory is read-writeable.
+
+.SH OPTIONS
+
+.TP
+.BI -c " cutoff"
+The cutoff option can be supplied to ensure that only groups with a
+certain amount of genes
+will be taken into account for the analysis. This option defaults to 1.
+
+.TP
+.BI -g " GO_ID1,GO_ID2,..."
+Use this option to analyse only the groups below certain GO groups. Defaults 
+to 
+.I GO:0008150,GO:0003674,GO:0005575
+for the root nodes of the three taxonomies for Gene Ontology.
+
+.TP
+.BI -r " #randomsets"
+.B func_hyper will calculate 1000 randomsets to estimate the background
+distribution for the global test statistics. Use this option
+to change that behaviour.
+
+.SH FILES
+
+The following outputfiles will be placed in the
+.IR output_directory :
+
+.TP
+.I statistics.txt
+This file contains general information about the supplied data and annotation
+in the 
+.I inputfile 
+and the significance of the results for each root node. 
+The latter information includes a test of how significant the result is
+overall (the global test statistics) and statistics about the amount of 
+groups below certain cutoffs in data
+and randomsets.
+It is a good idea to consult this file before you check the results in 
+.IR groups.txt. 
+
+.TP
+.I groups.txt
+All groups with more then 
+.I cutoff
+genes are included in this file. For each group the sum of the data 
+of the annotated genes is listed, as well as two p-values -- for the
+significance in the two directions of the used test -- for each group.
+Additionally a FWER and an FDR corrected p-value is given for each group
+and each direction of the test. A value of -1 for the FDR rate means that
+the value is equal to the FWER.
+
+.TP
+.I refin-YEAR-MM-DD.sh
+This shell-script can be used to run the refinement. 
+Warning: Do not remove the directory 
+.B tmp
+in the 
+.I output_directory
+until you finished this test. For a short description
+of the refinement shellscript see 
+.BR func-refin (1).
+
+
+.SH SEE ALSO
+.BR func-refin (1)
+.br
+.B http://func.eva.mpg.de/
+.br
+.B --prefix--/doc/func---RELEASE--/ 
+.br
+
+.SH AUTHOR
+Kay Pruefer <pruefer@eva.mpg.de>, Bjoern Muetzel <muetzel@eva.mpg.de>
+

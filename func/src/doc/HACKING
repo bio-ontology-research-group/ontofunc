@@ -1,0 +1,138 @@
+
+			HACKING FUNCs SOURCE
+
+
+
+1. INTRODUCTION
+
+FUNC has been developed over a long time. Many of the features it now
+presents were never planned in the beginning. So you might find 
+that the design of FUNC is actually not a textbook example object-
+oriented programming. Nevertheless, as the source had to be changed so
+often, the design was kept simple.Therefore, the code should be rather easy
+to undestand and might hopefully be of use in other projects.
+
+This file should give you a very brief overview over the 4 tools and
+how they work. 
+
+
+
+2. BIRDS EYE VIEW
+
+Each test consists of 
+	- 3 C++ Programs to
+		o generate the randomset
+		o test the categories, using the randomsets in order to
+	          estimate FDR and overall significance
+		o do the refinement
+	- 3 Perl scripts to
+		o check and reformat the inputfile
+		o nicely format the results for groups.txt+refinement 
+		  and
+		o create statistics.txt
+	- a shell script to invoke all programs in the right order.
+
+There is one shell scripts for each test. They are named func_wilcox,
+func_binom, func_wilcoxon and func_2x2contingency. This is what they
+do:
+	
+	1. check commandline arguments
+	2. call func_separate_taxonomies_embl.pl to separate the
+	   inputfile into one file per root node. This program also
+	   gives the annotation information for statistics.txt
+        3. for each root node:
+		3.1. run func_[testname]_randset and pipe generated
+		     data to func_[testname]_categorytest 
+		3.2. reformat result using func_category_statistics.pl
+		     and func_category_groups.pl
+	4. join the results and write statistics.txt and groups.txt
+	5. generate refinement-shellscript
+
+
+
+3. SEPARATE TAXONOMIES (func_seperate_taxonomies.pl)
+
+This script reads the term.txt and graph_path.txt file of the GO 
+termdb-tables distribution. graph_path.txt is the transition graph
+of GO and is used to get all nodes below the given root-nodes. 
+The inputfile is parsed and checked for unknown groups and 
+genes without any useful annotation. The outputfiles will be one for
+every root node containing the annotation in the format
+
+	Gene_id \t GO_1 GO_2 ...
+
+and a datafile containing the gene features (i.e. for mcdonald
+kreitman: 
+	Gene_id \t 1 12 3 15
+
+
+
+4. RANDOMSETS 
+
+The names of these programs might be misleading as they are not just
+generating the random data but also parsing the real data into the
+tree and putting them into the output. 
+
+The design of the 2x2 Contingency test, Binomial test and Wilcoxon
+Rank test are very similiar. In general the program consists of four
+interesting classes: go_obj, go_graph, gene and genes. 
+
+4.1. go_graph
+
+reads the information about the DAG of the GO and generates an
+internal representation of the tree with go_obj - objects as nodes.
+
+4.2. genes
+
+reads the annotation and data for each gene and generates gene objects. 
+It prepares a shuffled genes list for each randomset and let the gene
+objects write their data to the go_obj objects of other gene objects.
+
+4.3. gene
+
+knows the go_objs it is annotated to. The gene objects are capable of
+writing their information to the go_objs they belong to or to any
+other set of go_objs using the method write_data_gos( set<go_obj*> ).
+
+4.4 go_obj
+
+can print the sum of the gene-data it contains. Has methods
+to reset the values of gene data and to add up new gene data.
+
+The randomset generation for the hypergeometric test is more
+optimized... i will not describe it here.
+
+All programs are capable of writing the resultfile to stdout instead
+of writing to a file. 
+
+
+5. CATEGORY TEST
+
+The generated data from the randomset program is sufficient to 
+evaluate the significance for each group. The class go_groups has 
+methods to process one line (as string) of data or random data. You
+find the statistical methods in this class in the methods
+	
+	calculate_rand( .. ) and calculate_data( .. ).
+
+The methods for the overall significance and the FDR are in the 
+overall_significance class (see directory src/common). This class 
+evaluates only the p-values for data and randomsets so that it is
+equal for all tests.
+
+
+6. REFINEMENT
+
+The refinement has the same classes as the randomset program. There
+are only small differences:
+
+	1. The gene objects register at the go_obj objects because a
+	   unique identifier per gene is needed to take only those 
+	   genes out that are in significant subgroups. 
+	2. The go_obj object has a recursive method to traverse
+	   all nodes and do the refinement. See refine() and 
+	   start_refinement(). 
+
+The refinement is similiar for all tests.
+
+

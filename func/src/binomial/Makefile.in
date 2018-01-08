@@ -1,0 +1,30 @@
+
+RELEASE= @RELEASE@
+
+install = @INSTALL@
+
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+libdir = @libdir@
+
+all:
+	@cd category_test && make 
+	@cd random_set && make 
+	@cd refinement && make
+
+clean:
+	@cd category_test && make clean
+	@cd random_set && make clean
+	@cd refinement && make clean
+
+dist-clean:
+	@cd category_test && make dist-clean
+	@cd random_set && make dist-clean
+	@cd refinement && make dist-clean
+	
+install:
+	@cd category_test && make install
+	@cd random_set && make install
+	@cd refinement && make install

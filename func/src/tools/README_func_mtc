@@ -1,0 +1,40 @@
+
+func_mtc -- reads a tab-separated-values file, calculates FDR, FWER 
+            and global-p and prints the tsv-file 3 additional columns for the
+	    calculated values.
+
+Please Note
+===========
+
+func_mtc uses the (data and randomset) p-values for calculating 
+the FDR, FWER and the global p. All other columns must be present,
+but are not used. This means i.e. that func_mtc will not treat the taxonomies 
+separately. There is only one global-p value per file calculated.
+
+
+Input Format
+============
+
+The input file should contain the following fields:
+1) GO_ID
+2) taxonomy
+3) description
+4) nr genes in root node
+5) nr genes in this go node
+6) data pval
+7-N) randomset pvals
+
+The inputfile must contain a headerline with the same
+amount of columns as the rest of the inputfile.
+
+Output Format
+=============
+
+func_mtc will print the inputfile and attaches 3 more
+columns:
+
+N+1) FWER
+N+2) FDR
+N+3) global p
+
+

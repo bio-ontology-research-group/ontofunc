@@ -1,0 +1,344 @@
+#!/bin/bash
+#
+#  FUNC - Functional Analysis of Gene Expression Data
+#  Copyright (C) 2002  Bjoern Muetzel, Kay Pruefer
+#  
+#  This program is modifiable/redistributable under the terms of the
+#  GNU General Public License.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with this program; see the file COPYING. If not, write to the
+#  Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+#  Boston, MA 02111-1307, USA.
+# 
+
+function write_info() 
+{
+	echo "**************************************************"
+	echo -e $*
+	echo "**************************************************"
+}
+
+function write_error()
+{
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo -e $*
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	exit
+}
+
+function usage() 
+{
+	echo "Usage: $0 [ARGS]"
+	echo "List of arguments:"
+	echo "          -i infile"
+	echo "          -t termdb-directory"
+	echo "          -o output-directory"
+	echo "          -c cutoff in #genes per group (optional, default=1)"
+	echo "          -g root-nodes (optional, default: GO-Taxonomies)"
+	echo "          -r #randomsets (optional, default=1000)"
+	echo ""
+	echo "Example: $0 -i human-mouse.tsv -t ~/go_200503-termdb-tables/ -o ~/kaks-hm/ -g GO:0008151,GO:0003673"
+}
+
+function complete_cleanup
+{
+	if [ -d "$outdir/tmp" ] ; then
+		rm -rf "$outdir/tmp"	
+	fi
+}
+
+function ctrlc_handler
+{
+	
+	echo "**************************************************"
+	echo " User requests to stop... cleaning up "
+	echo "**************************************************"
+	complete_cleanup
+	exit 0
+}
+
+function error_handler
+{
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo " An error occured and the analysis has been stopped "
+	echo "      Please make sure that your inputfiles are     "
+	echo "                in the right format.                "
+	echo "      Dont hesitate to send an bug-report to        "
+	echo " pruefer@eva.mpg.de if you think you found an error "
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	complete_cleanup
+	exit 1
+}
+
+trap error_handler ERR
+trap ctrlc_handler 2
+
+BINPATH=@BINPATH@
+	
+cmdline="$*"
+
+infile=""
+cutoff=1
+termdb=""
+outdir=""
+nodes="GO:0003674,GO:0008150,GO:0005575"
+randsets=1000
+
+if [ $# -lt 6 ] ; then
+	usage ;
+	exit 1 ;
+fi
+
+while getopts i:c:t:o:g:r: o
+do case "$o" in
+	i) infile="$OPTARG";;
+	c) cutoff="$OPTARG";;
+	t) termdb="$OPTARG";;
+	o) outdir="$OPTARG";;
+	g) nodes="$OPTARG" ;; 
+	r) randsets="$OPTARG";;
+	h) usage ; exit 0 ;;
+	?) usage ; exit 1 ;;
+esac
+done
+
+########################################
+write_info "Checking arguments..."
+########################################
+
+# infile
+if [ ! -f "$infile" ] ; then
+	echo "Cannot open input-file $infile"
+	exit 1 
+elif [ ! -r "$infile" ] ; then
+	echo "Cannot read input-file $infile. Please check permissions."
+	exit 1 
+fi
+
+# output directory
+if [ ! -d "$outdir" ] ; then
+	echo "Cannot find directory $outdir"
+	exit 1
+elif [ ! -w "$outdir" ] ; then
+	echo "Cannot write to directory $outdir. Please check permission."
+	exit 1
+elif [ ! -r "$outdir" ] ; then
+	echo "Cannot read directory $outdir. Please check permission."
+	exit 1
+fi
+if [ "`expr \"$outdir\" : /`" -eq 0 ] ; then
+outdir="`pwd`/$outdir"
+fi
+
+# termdb tables
+if [ ! -d "$termdb" ] ; then 
+	echo "Cannot find directory $termdb. Please check permissions."
+	exit
+elif [ ! -r "$termdb" ] ; then
+	echo "Cannot read from directory $termdb. Please check permissions."
+	exit
+elif [ ! -r "$termdb/term.txt" ] ; then
+	echo "Cannot find Gene Ontology file \"term.txt\" in directory $termdb."
+	exit
+elif [ ! -r "$termdb/term2term.txt" ] ; then
+	echo "Cannot find Gene Ontology file \"term2term.txt\" in directory $termdb."
+	exit
+elif [ ! -r "$termdb/graph_path.txt" ] ; then
+	echo "Cannot find Gene Ontology file \"graph_path.txt\" in directory $termdb."
+	exit
+fi
+
+if [ "`expr \"$termdb\" : /`" -eq 0 ] ; then
+termdb="`pwd`/$termdb"
+fi
+db_termtxt="$termdb/term.txt"
+db_graphpathtxt="$termdb/graph_path.txt"
+db_term2termtxt="$termdb/term2term.txt"
+
+# cutoff
+if ! test $cutoff -gt 0 2>/dev/null ; then
+	echo "Argument for cutoff should be a number > 0 (but is $cutoff)."
+	exit 1 ;
+fi
+
+# randsets	
+if ! test $randsets -gt 0 2>/dev/null ; then
+	echo "Argument for number of randomsets should be an integer > 0 (is $randsets)."
+	exit 1 ;
+fi
+
+# root-nodes
+for i in `echo $nodes|tr , \ ` ; do
+	if [ ! "`expr \"GO:0008150\" : \"GO:[0-9]\\{7\\}\"`" -eq 10 ] 
+	then
+		echo "Need GO-ID as argument for root GO-Terms. Example: GO:0008150,GO:0003674."
+		echo "Argument wrong: $i"
+		exit 1
+	fi
+done
+
+
+# tempdir in $outdir
+if [ ! -d "$outdir/tmp" ] ; then
+	mkdir "$outdir/tmp" || (echo "Cannot create temp-directory, please check permission on $DIR." && exit)
+fi
+
+tmpdir="$outdir/tmp"
+
+echo "Commandline: $cmdline" > "$tmpdir/invoc-stats.txt"
+echo "Output-Directory: $outdir" >> "$tmpdir/invoc-stats.txt"
+echo "Datafile: $infile" >> "$tmpdir/invoc-stats.txt"
+echo "Root-Nodes: $nodes" >> "$tmpdir/invoc-stats.txt"
+echo "TermDB: $termdb" >> "$tmpdir/invoc-stats.txt"
+echo "Cutoff: $cutoff" >> "$tmpdir/invoc-stats.txt"
+echo "Randomsets: $randsets" >> "$tmpdir/invoc-stats.txt"
+echo "Date: `date`" >> "$tmpdir/invoc-stats.txt"
+echo "Host: `hostname`" >> "$tmpdir/invoc-stats.txt"
+
+echo "Ok."
+
+#############################
+write_info "Checking and reformatting input files."
+#############################
+
+sort -k 1b,1 "$infile" > "$tmpdir/infile-sorted"
+infile="$tmpdir/infile-sorted"
+
+"$BINPATH"/func_separate_taxonomies_embl.pl "$termdb" "$infile" "$tmpdir" "$nodes" "$tmpdir/annotation_statistics.txt" "$tmpdir/infile-data" || write_error "Error: Please consult the messages above."
+
+echo "Ok. Statistics:"
+cat "$tmpdir/annotation_statistics.txt"|sed -e 's/^/* /'
+
+rm -f "$tmpdir/perm_statistics.txt" 2>/dev/null
+rm -f "$tmpdir/GOgroups.txt" 2>/dev/null
+
+##############################################
+## For all root-nodes:
+NAMES=""
+for i in `echo $nodes|tr , \ ` 
+do 
+	NAME=`grep $i $termdb/term.txt|cut -f2`
+	NAMES="$NAMES$NAME "
+	write_info "Running Test for $NAME"
+	
+"$BINPATH"/func_wilcoxon_randset "$tmpdir/$i" "$tmpdir/infile-data" $randsets - "$db_termtxt" "$db_graphpathtxt" "$db_term2termtxt" $i | "$BINPATH"/func_wilcoxon_categorytest - "$tmpdir/$i-out" $cutoff $i "$tmpdir/$i-profile"
+
+(echo "" ; echo "----------" ; echo "$NAME"; echo "----------"  ; echo "" ;
+ "$BINPATH/func_category_statistics.pl" "low-ranks" "high-ranks" < "$tmpdir/$i-out") >> "$tmpdir/perm_statistics.txt"
+
+"$BINPATH/func_category_groups.pl" "$db_termtxt" "$tmpdir/$i-profile" < "$tmpdir/$i-out" >> "$tmpdir/GOgroups.txt"
+
+	
+done
+##
+##############################################
+
+
+#############################
+write_info "Generating output"
+#############################
+
+echo "----------" > "$outdir/statistics.txt"
+echo "Invocation:" >> "$outdir/statistics.txt"
+echo "----------" >> "$outdir/statistics.txt"
+echo >> "$outdir/statistics.txt"
+cat "$tmpdir/invoc-stats.txt" >> "$outdir/statistics.txt"
+echo >> "$outdir/statistics.txt"
+echo "----------" >> "$outdir/statistics.txt"
+echo "Annotation:" >> "$outdir/statistics.txt"
+echo "----------" >> "$outdir/statistics.txt"
+cat "$tmpdir/annotation_statistics.txt" >> "$outdir/statistics.txt"
+echo >> "$outdir/statistics.txt" 
+echo "----------------------" >> "$outdir/statistics.txt"
+echo "Summary for root nodes:"  >> "$outdir/statistics.txt"
+echo "----------------------" >> "$outdir/statistics.txt"
+
+cat "$tmpdir/perm_statistics.txt" >> "$outdir/statistics.txt"
+
+# header line for groups.txt
+echo -e "root_node_name\tnode_name\tnode_id\t#genes_outside_node\t#genes_in_node\tsum_of_ranks_in_node\traw_p_low_ranks\traw_p_high_ranks\tFWER_low\tFWER_high\tFDR_low\tFDR_high" > "$outdir/groups.txt" 
+cat "$tmpdir/GOgroups.txt" >> "$outdir/groups.txt"
+
+write_info "Finished all tests."
+
+#########################################
+## refinement
+
+REFIN="refin-`date +'%Y-%m-%d'`.sh"
+
+cat << ENDL
+Output in files: 
+  - $outdir/groups.txt
+  and
+  - $outdir/statistics.txt
+
+Run script $outdir/$REFIN for refinement (dont remove
+$tmpdir until youre done). 
+Parameters: - pvalue
+            - pvalue-after-refinement
+            - cutoff (#genes per group)
+ENDL
+
+cat << ENDL >"$outdir/$REFIN"
+#!/bin/bash
+
+if [ \$# -ne 1 ] ; then
+if [ \$# -ne 2 ] ; then
+if [ \$# -ne 3 ] ; then
+	echo "Usage \$0 pvalue
+pvalue-after-refinement cutoff"
+	echo ""
+	echo "      default p-value after refinement will be 0.05 if you"
+	echo "      omit these parameters. cutoff defaults to $cutoff."
+	exit
+fi
+fi
+fi
+
+if [ \$# -eq 1 ] ; then
+P1=\$1
+P2=0.05
+CO=$cutoff
+else
+if [ \$# -eq 2 ] ; then
+P1=\$1
+P2=\$2
+CO=$cutoff
+else
+P1=\$1
+P2=\$2
+CO=\$3
+fi
+fi
+
+
+for i in `echo $nodes|tr , \ ` 
+do
+
+NAME=\`grep \$i $termdb/term.txt|cut -f2\`
+echo "Refinement for \$NAME (\$i)"
+
+"$BINPATH/func_wilcoxon_refin" "$tmpdir/\$i" "$tmpdir/infile-data" \$P1 "$tmpdir/\$i-refin" "$db_termtxt" "$db_graphpathtxt" "$db_term2termtxt" \$i \$P2 \$CO
+
+echo -e "root_node_name\tnode_name\tnode_id\tsign?\traw_p_low_ranks\traw_p_high_ranks\tp_low_ranks_after_refinement\tp_high_ranks_after_refinement" > "$outdir/refinement-\$i-"\$P1"_"\$P2".txt"
+"$BINPATH/func_category_groups.pl" "$db_termtxt" < "$tmpdir/\$i-refin" >> "$outdir/refinement-\$i-"\$P1"_"\$P2".txt"
+
+done
+
+cat << XXX
+
+Refinement done. See results in files:
+ - $outdir/refinement-\*-\${P1}_\${P2}.txt 
+
+XXX
+
+ENDL
+
+chmod +x "$outdir/$REFIN"
+
+echo "Done."
+
+
+##
+#########################################

@@ -1,0 +1,66 @@
+
+
+			FUNC README
+
+
+1. INTRODUCTION
+
+This README file comes along with the source of FUNC. It contains
+general information about this package. If you are looking for
+installation instructions see the INSTALL file. You can find further 
+information regarding the implementation in the file src/doc/HACKING.
+
+FUNC is a set of 4 tools to analyse gene data using the Gene Ontology
+database. To keep the programs as compatible as possible, it needs the
+Gene Ontology structure as well as the mapping of the genes to the
+Gene Ontology.
+
+These package contains Free Software. Please see the COPYING file
+placed in the same directory as this file for copying information.
+
+
+
+2. MAPPING GENES TO GENE ONTOLOGY
+
+The Gene Ontology website (http://geneontology.org/) has a listing of
+all annotations to the gene ontology. Tools like Ensembl BioMart
+(http://www.ensembl.org/Multi/martview) can help a great deal, too.
+You can look at the following websites to find mappings:
+
+Affymetrix          - www.affymetrix.com
+LocusLink           - ftp.ncbi.nih.gov/refseq/LocusLink
+Unigene             - www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=unigene
+
+
+
+3. DOWNLOADING THE GO TERMDB TABLES
+
+You can download different releases of the Gene Ontology database from
+http://www.godatabase.org. The archives are located at:
+
+http://archive.geneontology.org/full/
+
+Choose the appropriate release (fitting the mapping of your data) and
+download the file 
+
+        go_[date]-termdb-tables.tar.gz
+
+Extract it using the command
+
+        tar -vxzf go_[date]-termdb-tables.tar.gz
+
+The directory go_[date]-termdb-tables must be passed as an argument to 
+the func programs.
+
+
+
+4. WHAT ELSE
+
+Please have a look at the manpages with
+
+	man func
+
+to learn more about the invocation of the tools, the input format and
+the output. Probably you will also find more information in the 
+documentation directory for this program (i.e. /usr/local/doc/func-VERSION)
+

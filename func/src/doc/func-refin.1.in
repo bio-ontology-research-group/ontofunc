@@ -1,0 +1,71 @@
+.TH FUNC 1 2006-09-02 "FUNC --RELEASE--"
+.SH NAME
+func-refin \- refines the results of the category test
+.SH SYNOPSIS
+.BR refin- YEAR-MM-DD .sh
+.I [pvalue] [pvalue-after-refinement] [cutoff] 
+.br
+.SH DESCRIPTION
+The refinement algorithm removes significant groups on a higher level if 
+they are only significant because they include genes from significant subgroups. 
+The result of the refinement are the most specific significant groups (as lower
+groups give a more specific description of the data). 
+
+The 
+.BR refin- YEAR-MM-DD .sh
+shellscript is created by one of the four 
+.BR func (1)
+tests. It 
+will use the same output-directory, termdb-tables
+and root-nodes as the invoked test.
+
+.SH OPTIONS
+.TP
+.I [pvalue]
+only the nodes, that are significant at this alpha are used for the refinement.
+.TP
+.I [pvalue-after-refinement]
+after removal of the data of significant subgroups a significant group is
+tested
+with this alpha.
+.TP
+.I [cutoff]
+only groups with at least 
+.I cutoff
+genes are tested. This cutoff is only applied before genes are removed.
+
+.SH FILES
+The refinement will place an resultfile for each root node 
+into the output directory. The first columns describe the
+Gene Ontology groups. The remaining 5 columns show
+
+.IP 1.
++ if the group is significant after refinement, - otherwise
+.IP 2.
+left pvalue before refinement 
+.IP 3.
+right pvalue before refinement 
+.IP 4.
+left pvalue after refinement
+.IP 5.
+right pvalue after refinement
+
+.LP 
+A value of -1 after refinement means, that this node was'nt significant
+before refinement. If the p value is -1 before the refinement, then the
+node does'nt contain any data.
+
+.LP
+The resultfiles will be named 
+refinement-\fBGO-ID\fR-\fIpvalue\fR-\fIpvalue-after-refinement\fR.txt.
+
+.SH SEE ALSO
+.BR func (1) 
+.br
+.B http://func.eva.mpg.de/
+.br
+.B --prefix--/doc/func---RELEASE--/ 
+.br
+
+.SH AUTHOR
+Kay Pruefer <pruefer@eva.mpg.de>, Bjoern Muetzel <muetzel@eva.mpg.de>

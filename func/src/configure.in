@@ -1,0 +1,56 @@
+
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(func, 0.4.8, [pruefer@eva.mpg.de])
+AC_LANG_CPLUSPLUS
+dnl AC_CONFIG_HEADERS(config.h) 
+
+dnl Checks for programs.
+AC_PROG_CXX
+AC_HEADER_STDC
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_CHECK_FUNCS([pow sqrt])
+AC_CHECK_HEADERS([float.h limits.h stdlib.h])
+AC_PATH_PROG(BASH,bash,[AC_MSG_ERROR([Need bash.])])
+AC_SUBST(BASH)
+AC_PATH_PROG(PERL,perl,[AC_MSG_ERROR([Need perl.])])
+AC_SUBST(PERL)
+AC_PATH_PROG(INSTALL,install,[AC_MSG_ERROR([Need install.])])
+AC_SUBST(INSTALL)
+AC_PATH_PROG(STRIP,strip,[false])
+AC_SUBST(STRIP)
+
+AC_CHECK_LIB(Rmath, main, , AC_MSG_FAILURE([Need libRmath. See README for details]), )
+
+RELEASE=AC_PACKAGE_VERSION
+AC_SUBST(RELEASE)
+
+dnl Checks for libraries.
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+AC_SUBST(MODS)
+
+AC_OUTPUT(
+binomial/category_test/Makefile
+binomial/refinement/Makefile
+binomial/random_set/Makefile
+binomial/Makefile
+hypergeometric/random_set/Makefile
+hypergeometric/category_test/Makefile
+hypergeometric/refinement/Makefile
+hypergeometric/Makefile
+Makefile
+2x2contingency/random_set/Makefile
+2x2contingency/category_test/Makefile
+2x2contingency/refinement/Makefile
+2x2contingency/Makefile
+wilcoxon/random_set/Makefile
+wilcoxon/category_test/Makefile
+wilcoxon/refinement/Makefile
+wilcoxon/Makefile
+tools/Makefile
+doc/Makefile
+common/Makefile
+)
+
