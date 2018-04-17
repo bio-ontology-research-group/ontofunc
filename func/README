@@ -52,9 +52,12 @@ Extract it using the command
 The directory go_[date]-termdb-tables must be passed as an argument to 
 the func programs.
 
+4. Suggested Text Editors
 
+Avoid using Microsoft Excel for input files formatting, sometimes it causes problems (ex. omitting lines)
+Probably you can use either Sublime Text for Linux or TextWrangler for macOS
 
-4. WHAT ELSE
+5. WHAT ELSE
 
 Please have a look at the manpages with
 
