@@ -10,14 +10,13 @@
 
 @Grab(group='org.slf4j', module='slf4j-api', version='1.7.25')
 @Grab(group='org.semanticweb.elk', module='elk-owlapi', version='0.4.2')
-@Grab(group='net.sourceforge.owlapi', module='owlapi-api', version='4.5.1')
-@Grab(group='net.sourceforge.owlapi', module='owlapi-apibinding', version='4.5.1')
-@Grab(group='net.sourceforge.owlapi', module='owlapi-impl', version='4.5.1')
-@Grab(group='net.sourceforge.owlapi', module='owlapi-parsers', version='4.5.1')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-api', version='4.5.17')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-apibinding', version='4.5.17')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-impl', version='4.5.17')
+@Grab(group='net.sourceforge.owlapi', module='owlapi-parsers', version='4.5.17')
 
 import java.util.logging.Logger
 import org.semanticweb.owlapi.apibinding.OWLManager
-import org.semanticweb.owlapi.vocab.OWLRDFVocabulary
 import org.semanticweb.owlapi.model.*
 import org.semanticweb.owlapi.reasoner.*
 import org.semanticweb.owlapi.profiles.*
@@ -27,6 +26,9 @@ import org.semanticweb.elk.owlapi.*
 import org.semanticweb.owlapi.model.parameters.Imports
 import org.semanticweb.owlapi.search.*
 
+
+
+println("OK")
 
 String formatClassNames(String s) {
   s=s.replace("<http://purl.obolibrary.org/obo/","")
@@ -61,6 +63,7 @@ if( opt.h ) {
     return
 }
 
+
 def owlfile = new File(opt.i)
 
 def outdir = new File(opt.o)
@@ -94,14 +97,13 @@ PrintWriter graphpathout = new PrintWriter(new BufferedWriter(new FileWriter(gra
 term2termout.println("\t\t\t\t\t")
 graphpathout.println("\t\t\t\t\t")
 */
-
 termout.println(formatClassNames(fac.getOWLThing().toString())+"\towl:Thing\towl:Thing\t"+formatClassNames(fac.getOWLThing().toString())+"\tend")
 ont.getClassesInSignature(Imports.INCLUDED).each { cl ->
   def flag = false // found English label? otherwise take any other...
   def clname = "root"
-  OWLAnnotationProperty label = fac.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI())
+  OWLAnnotationProperty label = fac.getRDFSLabel()
   EntitySearcher.getAnnotationObjects(cl, ont, label).each { anno ->
-    //  cl.getAnnotations(ont, label).each { anno ->
+  // cl.getAnnotations(ont, label).each { anno ->
     if (anno.getValue() instanceof OWLLiteral) {
       OWLLiteral val = (OWLLiteral) anno.getValue()
       if (val.hasLang("en")) {
